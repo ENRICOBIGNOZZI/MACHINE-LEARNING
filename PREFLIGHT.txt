@@ -1,0 +1,59 @@
+Manuscript: Risk-Controlling Prediction Sets under Unknown Temporal Dependence
+Subtitle: Finite-Sample Limits, Tuning-Free Self-Normalization, and Event-Triggered Online Certification
+Software: snrcps 0.2.0
+Build date: 2026-08-14
+
+PDF
+- File: main.pdf in the archival ZIP
+- SHA256: e4c83ba741f1e0a37a4fc743c23cc574a982be72e335fc7ebfd819cd195d70de
+- Pages: 40
+- Page size: A4
+- File size: 834407 bytes (814.9 KiB)
+- Encrypted: False
+- JavaScript or forms: None
+- Font embedding: Every font reported by pdffonts is embedded
+- LaTeX compilation: Three consecutive pdflatex passes completed with halt-on-error
+- Undefined references or citations: None
+- LaTeX warnings: None after the final pass
+- Overfull or underfull boxes: None
+- Render verification: All 40 pages rendered at 180 dpi; every figure-bearing page was inspected after the final build
+- Visual regression: 40 pages compared against the pre-upgrade manuscript; only the nine intended figure-bearing pages changed
+
+PUBLICATION FIGURES
+- Figure pairs in archival ZIP: 25 vector PDFs and 25 high-resolution PNGs
+- Raster resolution: 360 dpi
+- PDF output: Vector graphics with embedded fonts
+- Shared visual grammar: One color, marker, and line-style mapping for every method
+- Accessibility: Colorblind-safe palette plus marker and line-style redundancy
+- Numerical integrity: Figures are regenerated exclusively from stored numerical outputs
+- Main multi-panel figures inspected individually: certification efficiency, event-triggered recertification, electricity feature dependence, and CO2 episodic deployment
+- Missing includegraphics targets: None
+
+PYTHON PACKAGE
+- Package version: 0.2.0
+- Supported Python metadata: 3.10 through 3.13
+- Editable imports: Passed
+- Offline example: Passed
+- Event-triggered example: Passed
+- Unit tests: 14 passed
+- Python syntax compilation: Passed for code/, src/, tests/, and examples/
+- Wheel build: snrcps-0.2.0-py3-none-any.whl built successfully with --no-build-isolation
+- CITATION.cff: Parsed successfully; version, license, and repository metadata verified
+
+EVENT-TRIGGERED UPGRADE
+- Monitoring and certification are separate objects in the public API
+- An alarm cannot deploy an uncertified replacement
+- Evidence and proactive support modes, patience, cooldown, and confidence-spending utilities are tested
+- Piecewise-stationary stress test: 200 replications
+- Triggered mean coverage: 0.910
+- Triggered mean width: 4.819
+- Triggered mean recertifications: 5.67
+- Scheduled mean recertifications: 44.00
+- Mean update reduction: 87.1 percent
+- Scope statement retained: no arbitrary-stopping, arbitrary-drift, or anytime-valid claim
+
+REPRODUCIBILITY
+- Stored aggregate and repetition-level outputs included in the archival ZIP
+- Lightweight GitHub checkout includes the installable software, tests, examples, documentation, and core graphics style
+- Raw PJM East data intentionally excluded; checksum-verifying downloader is included in the archival ZIP
+- Random seeds and Brownian critical-value metadata included
