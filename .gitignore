@@ -1,0 +1,14 @@
+*.aux
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+build/
+dist/
+*.egg-info/
+data/PJME_hourly.csv

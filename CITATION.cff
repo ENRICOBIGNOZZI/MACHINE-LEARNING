@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use SN-RCPS, please cite the paper and this software release."
+title: "SN-RCPS: Risk-Controlling Prediction Sets under Unknown Temporal Dependence"
+type: software
+authors:
+  - family-names: Bignozzi
+    given-names: Enrico
+version: 0.2.0
+date-released: 2026-08-14
+repository-code: "https://github.com/ENRICOBIGNOZZI/MACHINE-LEARNING"
+url: "https://github.com/ENRICOBIGNOZZI/MACHINE-LEARNING"
+license: BSD-3-Clause
+keywords:
+  - conformal prediction
+  - risk control
+  - time series
+  - self-normalization
+  - event-triggered recertification
+preferred-citation:
+  type: article
+  title: "Risk-Controlling Prediction Sets under Unknown Temporal Dependence: Finite-Sample Limits, Tuning-Free Self-Normalization, and Event-Triggered Online Certification"
+  authors:
+    - family-names: Bignozzi
+      given-names: Enrico
+  year: 2026
