@@ -1,0 +1,56 @@
+{
+  "functional": "B(1) divided by the L2 norm of the Brownian bridge",
+  "notes": "Monte Carlo discretizations used in the manuscript and replication experiments. Extreme critical values require substantially more paths than the defaults in the public simulator.",
+  "records": [
+    {
+      "name": "main_0.90",
+      "confidence": 0.9,
+      "delta": 0.1,
+      "critical_value": 3.8891411573237535,
+      "paths": 1000000,
+      "grid_points": 800,
+      "seed": 20260810,
+      "recommended": true
+    },
+    {
+      "name": "frontier_0.90_independent_mc",
+      "confidence": 0.9,
+      "delta": 0.1,
+      "critical_value": 3.8958240692966,
+      "paths": 500000,
+      "grid_points": 800,
+      "seed": 2026081301,
+      "recommended": false
+    },
+    {
+      "name": "marginal_0.99",
+      "confidence": 0.99,
+      "delta": 0.01,
+      "critical_value": 8.572691147033666,
+      "paths": 1000000,
+      "grid_points": 800,
+      "seed": 20260810,
+      "recommended": true
+    },
+    {
+      "name": "episodic_1_minus_0.10_over_9",
+      "confidence": 0.9888888888888889,
+      "delta": 0.011111111111111112,
+      "critical_value": 8.417220927745623,
+      "paths": 1000000,
+      "grid_points": 800,
+      "seed": 2026081401,
+      "recommended": true
+    },
+    {
+      "name": "bonferroni_1_minus_0.01_over_17",
+      "confidence": 0.9994117647058823,
+      "delta": 0.0005882352941176471,
+      "critical_value": 14.240448713039,
+      "paths": 1000000,
+      "grid_points": 800,
+      "seed": 2026081501,
+      "recommended": true
+    }
+  ]
+}
