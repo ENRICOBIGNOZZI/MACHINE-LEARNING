@@ -1,0 +1,129 @@
+\section{From Total Rankings to Certified Partial Orders}
+\label{sec:ranking}
+
+\subsection{Prequential forecasts and score bands}
+
+At month $t$, let $\cA_t=\{1,\ldots,N_t\}$ be the eligible stock universe. A predetermined learning algorithm produces the next-month return forecast $\widehat\mu_{i,t}$ using information available at $t$. The algorithm may be linear, tree based, or a neural network. The primary implementation uses a fixed-length rolling training window, so the forecast sequence is genuinely out of sample and has finite memory.
+
+Let $\widehat s_{i,t}>0$ be a reliability scale. It can be learned from prequential absolute residuals, model disagreement, or both, but it is computed without using $R_{i,t+1}$. The paper does not interpret
+\[
+[\widehat\mu_{i,t}-q\widehat s_{i,t},
+  \widehat\mu_{i,t}+q\widehat s_{i,t}]
+\]
+as a stock-specific confidence interval. The bands are a nested device for deciding which relative comparisons the investor is willing to assert. Their calibration concerns the realized ranking loss of the complete decision rule.
+
+For $q\geq0$, define
+\begin{equation}
+\underline\mu_{i,t}(q)
+=
+\widehat\mu_{i,t}-q\widehat s_{i,t},
+\qquad
+\overline\mu_{i,t}(q)
+=
+\widehat\mu_{i,t}+q\widehat s_{i,t}.
+\label{eq:bands}
+\end{equation}
+
+\begin{definition}[Certified rank relation]
+For distinct stocks $i,j\in\cA_t$, write
+\begin{equation}
+i\succ_{q,t}j
+\quad\Longleftrightarrow\quad
+\underline\mu_{i,t}(q)
+>
+\overline\mu_{j,t}(q).
+\label{eq:relation}
+\end{equation}
+When neither $i\succ_{q,t}j$ nor $j\succ_{q,t}i$ holds, the rule abstains on the pair.
+\end{definition}
+
+Let $A_{ij,t}(q)=\ind\{i\succ_{q,t}j\}$. The next proposition gives the basic geometry.
+
+\begin{proposition}[Nested strict partial rankings]
+\label{prop:partial-order}
+For every $t$ and $q\geq0$, the relation $\succ_{q,t}$ is irreflexive, asymmetric, and transitive. Moreover, if $q'\geq q$, then
+\[
+A_{ij,t}(q')
+\leq
+A_{ij,t}(q)
+\]
+for every pair $(i,j)$.
+\end{proposition}
+
+The result means that abstention never reverses a rank relation. It only deletes relations that are not sufficiently separated. Transitivity follows from interval separation, which is why we use stock-level bands instead of an arbitrary pairwise margin that could generate cycles.
+
+\subsection{Reliable breadth}
+
+Let $\omega_{ij,t}=\omega_{ji,t}\geq0$ be a pair weight measurable at $t$. The baseline uses equal weights; alternatives emphasize top-versus-bottom relations, market capitalization, or trade capacity. Define the total weight of the raw ranking by
+\[
+W_t
+=
+\sum_{i\neq j}
+\omega_{ij,t}A_{ij,t}(0).
+\]
+Absent forecast ties, exactly one direction is active for each unordered pair with positive weight.
+
+\begin{definition}[Reliable breadth]
+The reliable breadth of the cross-section at threshold $q$ is
+\begin{equation}
+\cB_t(q)
+=
+\frac{
+\sum_{i\neq j}\omega_{ij,t}A_{ij,t}(q)
+}{W_t},
+\label{eq:reliable-breadth}
+\end{equation}
+with $\cB_t(q)=0$ when $W_t=0$.
+\end{definition}
+
+Reliable breadth lies in $[0,1]$, equals one at $q=0$ under no ties, and is nonincreasing in $q$. It measures relations, not securities. A cross-section with one thousand stocks can have high nominal breadth and low reliable breadth if most forecast differences are small relative to their local scale.
+
+The empirical analysis reports several versions. All-pair breadth measures the entire ordering. Tail breadth restricts $\omega_{ij,t}$ to pairs in which one stock lies in the raw top quantile and the other in the raw bottom quantile. Rank-distance breadth groups pairs by the distance between their raw ranks. These distinctions determine whether unreliability is confined to the middle of the cross-section or reaches the positions that drive conventional long--short strategies.
+
+\subsection{Pairwise decision losses}
+
+The realized error of an active relation is
+\[
+M_{ij,t+1}
+=
+\ind\{R_{i,t+1}\leq R_{j,t+1}\}.
+\]
+For candidate $q$, define the selected-pair error rate
+\begin{equation}
+e_t(q)
+=
+\frac{
+\sum_{i\neq j}\omega_{ij,t}A_{ij,t}(q)M_{ij,t+1}
+}{
+\sum_{i\neq j}\omega_{ij,t}A_{ij,t}(q)
+},
+\label{eq:selected-error}
+\end{equation}
+with $e_t(q)=0$ when no relation is active. This is the natural answer to: among the comparisons the investor was willing to use, what fraction were wrong?
+
+The denominator in \eqref{eq:selected-error} changes with $q$, so $e_t(q)$ need not be monotone. Directly applying an ordered risk-controlling selector would therefore be invalid. For an increasing finite candidate grid $q_1<\cdots<q_K$, define
+\begin{equation}
+L_t(q_k)
+=
+\max_{\ell\geq k}e_t(q_\ell).
+\label{eq:monotone-envelope}
+\end{equation}
+Then $0\leq e_t(q_k)\leq L_t(q_k)\leq1$ and $L_t(q_k)$ is nonincreasing in $k$. We certify the stationary risk
+\begin{equation}
+\cR(q_k)
+=
+\E[L_t(q_k)].
+\label{eq:ranking-risk}
+\end{equation}
+Controlling \eqref{eq:ranking-risk} controls the expected selected-pair error at the deployed threshold and protects against accidental nonmonotonicity at stricter thresholds.
+
+A secondary loss avoids the random denominator:
+\begin{equation}
+L_t^{\mathrm{mass}}(q)
+=
+\frac{
+\sum_{i\neq j}\omega_{ij,t}A_{ij,t}(q)M_{ij,t+1}
+}{W_t}.
+\label{eq:wrong-mass}
+\end{equation}
+It is exactly nonincreasing in $q$ and measures the weighted mass of wrong bets per raw opportunity. The main text emphasizes \eqref{eq:selected-error} because its interpretation is closer to ranking reliability; \eqref{eq:wrong-mass} is a robustness target.

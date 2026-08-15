@@ -1,0 +1,10 @@
+seed: 20260814
+n_months: 240
+n_assets: 250
+n_features: 12
+proposal_months: 36
+certification_months: 72
+deployment_months: 12
+alpha: 0.30
+delta: 0.10
+cost_bps: 25

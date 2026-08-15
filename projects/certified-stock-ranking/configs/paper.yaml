@@ -1,0 +1,97 @@
+project:
+  title: When Should Investors Trust a Machine-Learned Stock Ranking?
+  seed: 20260814
+data:
+  source: Jensen-Kelly-Pedersen Global Factor Data on WRDS
+  wrds_table: contrib.global_factor
+  country: USA
+  factor_set: jkp153
+  factor_details_commit: 6fb206b42b5778ba0a1d12e3fec0c23ac6b1c251
+  start_date: '1963-01-31'
+  end_date: '2025-12-31'
+  screens:
+    common: 1
+    exch_main: 1
+    primary_sec: 1
+    obs_main: 1
+  portfolio_size_groups:
+  - mega
+  - large
+  - small
+  target: ret_exc_lead1m
+  crsp_daily_cost_supplement: true
+forecasting:
+  models:
+  - ridge
+  - elastic_net
+  - extra_trees
+  - hist_gb
+  - mlp
+  - ensemble
+  refit_frequency_months: 12
+  cross_sectional_rank_transform: true
+  target: ret_fwd
+  training_months: 120
+  scale_history_months: 60
+  hyperparameter_policy: fixed_ex_ante; nested chronological validation is robustness
+  effective_memory_months: 192
+certification:
+  alpha_grid:
+  - 0.25
+  - 0.3
+  - 0.35
+  - 0.4
+  delta: 0.1
+  candidate_grid:
+  - 0.0
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+  - 0.5
+  - 0.6
+  - 0.7
+  - 0.8
+  - 0.9
+  - 1.0
+  - 1.1
+  - 1.2
+  - 1.3
+  - 1.4
+  - 1.5
+  - 1.6
+  - 1.7
+  - 1.8
+  - 1.9
+  - 2.0
+  - 2.1
+  - 2.2
+  - 2.3
+  - 2.4
+  - 2.5
+  - 2.6
+  - 2.7
+  - 2.8
+  - 2.9
+  - 3.0
+  proposal_months: 0
+  certification_months: 120
+  deployment_months: 12
+  random_proposal_grid_robustness: true
+  random_grid_guard_months: 194
+  primary_loss: monotone_envelope_pairwise_error
+  pair_universes:
+  - all
+  - tail
+  tail_fraction: 0.1
+portfolio:
+  raw_top_fraction: 0.1
+  gross_leverage: 2.0
+  linear_cost_bps:
+  - 10
+  - 25
+  - 50
+  aum_usd:
+  - 10000000
+  - 100000000
+  - 1000000000

@@ -1,0 +1,53 @@
+\section{Pre-Specified Empirical Findings and Exhibit Map}
+\label{sec:empirical-map}
+
+This section states the empirical tests and the claims each test could support. It deliberately contains no numerical WRDS stock-level estimates in the current research draft.
+
+\subsection{How much of the ranking is reliable?}
+
+The first table reports average, median, and tail quantiles of $\cB_t(\widehat q)$ by model and risk budget. The first figure plots the probability that a relation survives against raw forecast spread, normalized spread, and rank distance. Separate panels cover all pairs, top-versus-bottom decile pairs, and adjacent ranks.
+
+The economically relevant null is not $\cB_t=1$, which is unlikely by construction at strict risk budgets. We test whether reliable breadth remains materially below nominal breadth even among extreme predicted-return portfolios. A finding confined to adjacent middle ranks would be less important than a finding that removes a substantial fraction of top--bottom relations.
+
+\subsection{When does reliable breadth contract?}
+
+The second figure plots reliable breadth through time and overlays aggregate volatility, market illiquidity, recessions, and funding-stress measures. Predictive regressions take the form
+\[
+\cB_{t+1}
+=
+a+b^{\prime}\bm H_t+u_{t+1},
+\]
+where $\bm H_t$ is predetermined. The aim is descriptive state dependence, not causal identification. We also test whether contractions in reliable breadth forecast weaker net performance of raw rank strategies and a larger certified-versus-raw return gap.
+
+\subsection{Where is the reliable information?}
+
+We estimate relation-level survival probabilities as functions of size, liquidity, idiosyncratic volatility, characteristic extremeness, sector, forecast disagreement, and model class. To avoid treating millions of pairs as independent observations, inference aggregates relation outcomes by month and uses stock-level and month-level clustering in supporting regressions.
+
+A central test conditions jointly on predicted spread and scale. If reliability is only a relabelling of forecast magnitude, the scale and other state variables should add little after conditioning on the spread. If ranking reliability is distinct, economically similar predicted differences should have different survival and realized-error rates across stocks and states.
+
+\subsection{What do uncertified trades contribute?}
+
+Equation \eqref{eq:exact-decomposition} separates the raw edge portfolio into certified and removed components. The third table attributes gross returns, average positions, turnover, linear costs, capacity-aware costs, and net returns. The strongest economically meaningful pattern would be that removed relations account for a disproportionately large share of turnover and costs relative to persistent gross return. The opposite result is possible and would reject the proposed economic mechanism.
+
+Because transaction costs are nonlinear, we report three attributions: stand-alone costs of each component, marginal cost from adding the component to the other, and a two-component Shapley allocation. No single attribution is presented as an accounting identity.
+
+\subsection{Does abstention improve the implementable frontier?}
+
+The fourth figure traces expected net return against volatility, reliable breadth, and turnover. Variable-notional certified portfolios can improve utility by reducing exposure; equal-gross certified portfolios test whether the retained relations have greater information quality. We report Sharpe ratios, certainty equivalents, maximum drawdowns, and capacity at multiple AUM levels. Economic significance requires improvement over simple spread thresholds and over forecast-confidence filtering, not merely over an unfiltered neural network.
+
+\subsection{Robustness and falsification}
+
+The robustness design includes:
+\begin{enumerate}[leftmargin=2em]
+\item alternative characteristic releases and sample endpoints;
+\item NYSE breakpoints, microcap exclusions, and value weighting;
+\item binary error, normalized pairwise regret, and wrong-bet-mass losses;
+\item constant, residual, disagreement, volatility, and confidence-interval scales;
+\item fixed rolling and expanding forecast windows;
+\item scheduled and event-triggered recertification;
+\item blocked finite-sample certification under a conservative dependence envelope;
+\item placebo thresholds selected after permuting forecast spreads within month;
+\item negative-control rankings based on stale or random characteristics.
+\end{enumerate}
+
+The paper is successful only if reliable breadth is stable across reasonable definitions and has incremental economic content. A method that selects a sparse ranking but does not alter realized error, costs, or net investment outcomes would not support the finance claim.

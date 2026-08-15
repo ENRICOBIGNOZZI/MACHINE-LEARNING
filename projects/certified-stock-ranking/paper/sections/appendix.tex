@@ -1,0 +1,140 @@
+\section{Proofs}
+
+\subsection{Proof of Proposition \ref{prop:partial-order}}
+
+\begin{proof}
+Irreflexivity follows because $\underline\mu_{i,t}(q)\leq\overline\mu_{i,t}(q)$. If $i\succ_{q,t}j$, then
+\[
+\underline\mu_{i,t}(q)
+>
+\overline\mu_{j,t}(q)
+\geq
+\underline\mu_{j,t}(q),
+\]
+so $j\succ_{q,t}i$ is impossible. For transitivity, suppose $i\succ_{q,t}j$ and $j\succ_{q,t}k$. Then
+\[
+\underline\mu_{i,t}(q)
+>
+\overline\mu_{j,t}(q)
+\geq
+\underline\mu_{j,t}(q)
+>
+\overline\mu_{k,t}(q),
+\]
+which implies $i\succ_{q,t}k$. Finally, for $q'\geq q$,
+\[
+\underline\mu_{i,t}(q')
+\leq
+\underline\mu_{i,t}(q),
+\qquad
+\overline\mu_{j,t}(q')
+\geq
+\overline\mu_{j,t}(q).
+\]
+Therefore, every relation active at $q'$ is also active at $q$.
+\end{proof}
+
+\subsection{Proof of Proposition \ref{prop:no-trade}}
+
+\begin{proof}
+For $x\geq0$, the worst expected spread in \eqref{eq:robust-pair-choice} is $d_{ij,t}-q s_{ij,t}$. The robust objective is therefore
+\[
+x[d_{ij,t}-q s_{ij,t}-c_{ij,t}]
+-
+\frac{\gamma\nu_{ij,t}}{2}x^2.
+\]
+It is strictly concave. Its unconstrained maximizer is
+\[
+\frac{d_{ij,t}-q s_{ij,t}-c_{ij,t}}
+{\gamma\nu_{ij,t}}.
+\]
+Projection onto $[0,\infty)$ gives \eqref{eq:no-trade-solution}, and the position is zero exactly under \eqref{eq:no-trade-region}.
+\end{proof}
+
+\subsection{Proof of Theorem \ref{thm:certified-ranking}}
+
+\begin{proof}
+For every candidate $q_k$, the loss in \eqref{eq:monotone-envelope} is bounded in $[0,1]$ and is nonincreasing in $k$. Assumption \ref{ass:finance-fclt} and the continuous-mapping argument for the recursive self-normalizer imply the uniform one-sided calibration statement
+\[
+\sup_{q\in\cQ}
+\left[
+\Prob\left\{
+\cR(q)>U_m^{\mathrm{SN}}(q;\delta)
+\right\}
+-
+\delta
+\right]_+
+\leq
+\varepsilon_m(\delta,\cQ),
+\]
+where $\varepsilon_m(\delta,\cQ)\to0$. A Berbee coupling across the proposal--certification guard gap adds $\beta(g)$ and permits the proposal-generated random grid to be treated as independent of the certification trajectory.
+
+Conditional on the proposal grid, let $k^\dagger$ be the largest unsafe candidate, so $\cR(q_{k^\dagger})>\alpha$ and all stricter candidates are safe. The selector can deploy an unsafe rule only if the upper bound at $k^\dagger$ fails to cover its risk. Hence the probability of unsafe selection is at most the pointwise calibration failure at that boundary candidate. This gives \eqref{eq:finance-risk-bound} without a factor depending on $K$. Since $e_t(q)\leq L_t(q)$ for every $t$ and $q$, $\E[e_0(q)]\leq\cR(q)$, which gives \eqref{eq:pairwise-error-bound}.
+\end{proof}
+
+\section{Exact Pair Counting without Materializing the Relation Graph}
+
+A monthly cross-section with $N$ stocks contains $N(N-1)/2$ raw relations. Materializing every pair is unnecessary. For a fixed threshold $q$, define
+\[
+a_i
+=
+\widehat\mu_{i,t}-q\widehat s_{i,t},
+\qquad
+b_j
+=
+\widehat\mu_{j,t}+q\widehat s_{j,t}.
+\]
+Stock $i$ dominates stock $j$ if $b_j<a_i$. Sorting stocks by $a_i$ and $b_j$ gives the active-pair count in $O(N\log N)$ operations. To count errors, compress realized returns into ranks and maintain a Fenwick tree over the returns of stocks whose upper endpoint has entered the active set. For each $i$, the tree returns the weight of active $j$ with $R_{j,t+1}\geq R_{i,t+1}$. Repeating this computation over $K$ candidates costs $O(KN\log N)$ and uses $O(N)$ memory.
+
+The implementation in \texttt{src/rankcert/partial\_order.py} supports product pair weights and is checked against brute force in the unit tests. Reliable breadth and graph degree require only one-dimensional sorting and cumulative sums.
+
+\section{Prequential Learning Protocol}
+
+Let $p$ be the forecast-training-window length. For each month $t$:
+\begin{enumerate}[leftmargin=2em]
+\item form characteristics using information available at $t$;
+\item fit or update the model using observations with formation dates in $[t-p,t-1]$ and realized targets available by $t$;
+\item produce $\widehat\mu_{i,t}$ for the eligible cross-section;
+\item produce $\widehat s_{i,t}$ from residuals and model disagreement available by $t$;
+\item store the prediction, scale, universe, and version metadata;
+\item reveal $R_{i,t+1}$ only after portfolio formation.
+\end{enumerate}
+The entire forecast panel is generated before the certification analysis selects thresholds. This prevents the certificate from feeding back into forecast-model tuning.
+
+\section{Synthetic Software Validation}
+
+The repository includes a persistent latent-state stock panel solely to validate the end-to-end code path. It is not calibrated to U.S. equities and is not used in any empirical claim. The validation verifies that the optional proposal-grid branch and the primary fixed-grid branch both execute, the selected-pair error is replaced by its monotone envelope, the self-normalized bound selects a nontrivial threshold, and deployment outputs include pair error, reliable breadth, turnover, costs, and net returns.
+
+\IfFileExists{figures/concept_partial_order.pdf}{
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/concept_partial_order.pdf}
+\caption{Conceptual score-band construction. Overlapping score bands imply abstention. This is a schematic, not an empirical estimate.}
+\end{figure}}{}
+
+\IfFileExists{figures/certification_frontier.pdf}{
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{figures/certification_frontier.pdf}
+\caption{Synthetic certification frontier used to validate the software. The plot is not evidence about stock-ranking reliability.}
+\end{figure}}{}
+
+\section{Planned Main Tables and Figures}
+
+\begin{table}[H]
+\centering
+\caption{Planned headline exhibits}
+\begin{tabularx}{\textwidth}{@{}p{0.12\textwidth}X@{}}
+\toprule
+Exhibit & Content \\
+\midrule
+Figure 1 & Probability a rank relation survives against predicted spread, normalized spread, and rank distance. \\
+Table 1 & Reliable breadth by model, risk budget, all-pair universe, and tail-pair universe. \\
+Figure 2 & Time series of reliable breadth with aggregate uncertainty and liquidity states. \\
+Table 2 & Relation-level anatomy by size, liquidity, idiosyncratic volatility, sector, and model disagreement. \\
+Table 3 & Certified versus removed-edge attribution of gross return, turnover, costs, and net return. \\
+Figure 3 & Implementable frontier: expected net return against risk and reliable breadth at multiple AUM levels. \\
+Table 4 & Comparison with forecast-confidence filtering and simple predicted-spread thresholds. \\
+\bottomrule
+\end{tabularx}
+\end{table}
