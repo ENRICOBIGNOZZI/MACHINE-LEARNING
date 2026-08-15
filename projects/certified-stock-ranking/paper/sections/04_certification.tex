@@ -1,0 +1,141 @@
+\section{Risk Certification from One Financial History}
+\label{sec:certification}
+
+\subsection{Candidate library, certification, and deployment}
+
+The baseline candidate library is deterministic and fixed before the empirical analysis. We use a dense increasing grid $0=q_1<\cdots<q_K$ for the dimensionless score-band multiplier. This choice eliminates dependence between library construction and the certification trajectory. It also preserves sample length: no proposal block is needed. Because ordered selection does not pay a multiplicity factor in $K$, grid refinement is statistically inexpensive.
+
+As a robustness check, a proposal block can use the forecast-separation margins
+\[
+\frac{
+|\widehat\mu_{i,t}-\widehat\mu_{j,t}|
+}{
+\widehat s_{i,t}+\widehat s_{j,t}
+}
+\]
+to target particular reliable-breadth levels. For a rolling learner with memory $p$, this random library is separated from certification by a guard gap exceeding $p$; otherwise the proposal variables and certification losses overlap through model training. The deterministic grid is therefore the primary design. The certification block contains $m$ monthly cross-sections and produces the bounded monotone losses in \eqref{eq:monotone-envelope}.
+
+For candidate $q_k$, define
+\begin{equation}
+\widehat\cR_m(q_k)
+=
+\frac1m\sum_{t=1}^{m}L_t(q_k)
+\label{eq:empirical-risk}
+\end{equation}
+and the recursive self-normalizer
+\begin{equation}
+\widehat V_m(q_k)
+=
+\frac{1}{m^2}
+\sum_{\ell=1}^{m}
+\left[
+\sum_{t=1}^{\ell}
+\left[L_t(q_k)-\widehat\cR_m(q_k)\right]
+\right]^2.
+\label{eq:self-normalizer-finance}
+\end{equation}
+Let $B$ be standard Brownian motion and let $c_{1-\delta}$ be the $(1-\delta)$ quantile of
+\begin{equation}
+\mathsf T
+=
+\frac{B(1)}{
+\left\{
+\int_0^1[B(r)-rB(1)]^2\,dr
+\right\}^{1/2}}.
+\label{eq:brownian-pivot-finance}
+\end{equation}
+The self-normalized upper risk bound is
+\begin{equation}
+U_{m,k}^{\mathrm{SN}}
+=
+\min\left\{
+1,
+\widehat\cR_m(q_k)
++
+c_{1-\delta}
+\left(
+\frac{\widehat V_m(q_k)}{m}
+\right)^{1/2}
+\right\}.
+\label{eq:sn-ucb-finance}
+\end{equation}
+The selected threshold is the smallest candidate for which the bound at that candidate and every stricter candidate is below $\alpha$:
+\begin{equation}
+\widehat k
+=
+\min\left\{
+k:
+U_{m,\ell}^{\mathrm{SN}}\leq\alpha
+\text{ for every }\ell\geq k
+\right\}.
+\label{eq:finance-selector}
+\end{equation}
+If no finite candidate passes, the rule abstains from every comparison.
+
+The critical value in \eqref{eq:sn-ucb-finance} is $c_{1-\delta}$, not $c_{1-\delta/K}$. Ordered monotonicity means that an unsafe selected rule requires a failure at one boundary candidate, so the nominal confidence level does not deteriorate with the resolution of the candidate grid. This is the risk-controlling selection principle of \citet{BatesEtAl2021}; the dependence-robust self-normalized bound is specialized from \citet{Bignozzi2026SNRCPS}.
+
+\subsection{Certifying a dynamic learning rule}
+
+Let $\bm Z_t$ contain the complete monthly cross-section, returns, characteristics, and predetermined aggregate inputs. The primary forecasting algorithm uses a fixed rolling window of length $p$ and a fixed refitting protocol. Thus, for every candidate $q$, the ranking loss can be written as
+\begin{equation}
+L_t(q)
+=
+h_q(\bm Z_{t-p},\ldots,\bm Z_{t+1}),
+\label{eq:finite-memory-loss}
+\end{equation}
+where the lead appears only because $L_t$ is realized after next-month returns become available. The algorithm is dynamic, but the map $h_q$ is fixed before proposal. Under a stationary underlying process, \eqref{eq:finite-memory-loss} defines a stationary finite-memory loss process. This is the object being certified.
+
+\begin{assumption}[Sequential limit condition]
+\label{ass:finance-fclt}
+For $q$ in a compact candidate interval, the centered partial-sum process
+\[
+\left\{
+\frac1{\sqrt m}
+\sum_{t=1}^{\lfloor mr\rfloor}
+[L_t(q)-\cR(q)]
+:(q,r)\in\cQ\times[0,1]
+\right\}
+\]
+converges weakly to a continuous Gaussian process whose time section at each $q$ has distribution $\sigma(q)B(\cdot)$, with $\sigma(q)$ continuous and bounded away from zero. The associated Brownian-bridge denominator is uniformly nondegenerate.
+\end{assumption}
+
+This assumption is stated directly because no single mixing exponent is sufficient for every high-dimensional learning rule. A fixed finite library only requires a multivariate functional central limit theorem. For finite-memory forecasts under geometrically absolutely regular data, standard empirical-process conditions give one primitive route.
+
+\begin{theorem}[Certified partial ranking]
+\label{thm:certified-ranking}
+Suppose Assumption \ref{ass:finance-fclt} holds and the pair weights and forecasting protocol are fixed before certification outcomes are observed. The candidate grid is either deterministic or generated on a proposal block separated from certification by a guard gap $g$. Let $\rho_g=0$ for the deterministic grid and let $\rho_g$ denote the proposal--certification coupling remainder for a random grid. Let $\widehat q=q_{\widehat k}$ be selected by \eqref{eq:finance-selector}. Then
+\begin{equation}
+\Prob\left\{
+\cR(\widehat q)>\alpha
+\right\}
+\leq
+\delta
++
+\varepsilon_m(\delta,\cQ)
++
+\rho_g,
+\label{eq:finance-risk-bound}
+\end{equation}
+where $\varepsilon_m(\delta,\cQ)\to0$. If the loss at date $t$ has memory $p$ and the underlying process is absolutely regular, one may take $\rho_g\leq\beta_{\bm Z}(g-p-1)$ whenever $g>p+1$. Moreover,
+\begin{equation}
+\Prob\left\{
+\E[e_0(\widehat q)]>\alpha
+\right\}
+\leq
+\delta
++
+\varepsilon_m(\delta,\cQ)
++
+\rho_g.
+\label{eq:pairwise-error-bound}
+\end{equation}
+The bound contains no factor depending on $K$.
+\end{theorem}
+
+Equation \eqref{eq:pairwise-error-bound} follows because $e_t(q)\leq L_t(q)$ pointwise. The guarantee is training conditional in the sense relevant for a portfolio manager: with high probability over the historical trajectory used to choose $\widehat q$, the deployed algorithm--threshold pair has stationary decision risk below $\alpha$. It is not a conditional-coverage statement for every stock or market state.
+
+\subsection{Repeated deployment}
+
+The baseline recertifies annually and freezes $\widehat q$ for the next twelve deployment months. Forecasts continue to update according to the predetermined rolling algorithm. If epoch $j$ receives confidence budget $\delta_j$ and $\sum_j\delta_j\leq\delta$, a union bound gives joint control over all scheduled deployments without requiring independence between epochs. An event-triggered version can monitor realized loss or reliable breadth at deterministic checkpoints and activate a new, separately certified threshold. The trigger decides when to seek a replacement; it does not substitute for certification and does not create an arbitrary-stopping theorem.
+
+Finite-sample exactness without a dependence envelope is impossible even for simple persistent Markov losses, as shown in the companion paper. We therefore report a blocked finite-sample benchmark when a conservative mixing envelope is imposed, but use self-normalization as the primary dependence-blind procedure. The distinction is explicit: the blocked result is finite sample and assumption heavy; the self-normalized result is tuning free and process-specific asymptotic.

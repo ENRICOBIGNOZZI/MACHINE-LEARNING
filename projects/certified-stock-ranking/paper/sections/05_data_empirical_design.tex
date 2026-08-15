@@ -1,0 +1,70 @@
+\section{Data and Empirical Design}
+\label{sec:data-design}
+
+\subsection{Stock-level panel}
+
+The baseline data are the monthly stock-level Global Factor Data of \citet{JensenKellyPedersen2023}, distributed on WRDS as \texttt{contrib.global\_factor}. This is a preconstructed panel containing security identifiers, firm characteristics, and future stock returns in a common time-stamped format. The table currently contains more than four hundred characteristic fields. We use the 153 characteristics that enter the published JKP factor taxonomy, with their names pinned to an exact release of the authors' factor-details file. This choice gives a standard, economically interpretable predictor set without reconstructing hundreds of signals or merging a moving public characteristic release to returns.
+
+The baseline sample contains US stocks and applies the four JKP screens
+\begin{equation}
+\texttt{common}=1,
+\qquad
+\texttt{exch\_main}=1,
+\qquad
+\texttt{primary\_sec}=1,
+\qquad
+\texttt{obs\_main}=1.
+\label{eq:jkp-screens}
+\end{equation}
+These restrictions retain common equity on a country's main exchanges, select the primary security when a firm has multiple securities, and avoid duplicate CRSP and Compustat observations. The prediction target at formation month $t$ is \texttt{ret\_exc\_lead1m}, the next-month excess return supplied by the same panel. The baseline extraction runs from January 1963 through December 2025. The precise ending month is verified against the live WRDS table and recorded in the extraction manifest.
+
+Descriptive estimates of ranking reliability use the full screened US cross-section. Baseline investable portfolios retain the JKP mega, large, and small size groups and exclude micro and nano stocks. We restore the complete cross-section in robustness tests and report all results separately by size group. This division prevents the headline economic value from being driven mechanically by securities whose nominal forecast spreads are difficult to implement.
+
+The JKP panel also contains market equity and several liquidity or spread characteristics. These variables support mechanism tests and reduced-form cost robustness. The primary capacity analysis supplements the monthly panel with CRSP daily price and volume data, from which we construct trailing average dollar volume and daily volatility. A ready-made predictor-and-return panel does not eliminate the need to measure implementation costs separately. The replication archive therefore records the JKP release, live WRDS schema, selected columns, standard screens, extraction dates, annual partition counts, CRSP cost-data vintage, and file checksums before any production estimate is generated.
+
+As an external standardized benchmark, we additionally support the JKP Common Task Framework tables \texttt{contrib\_global\_factor.ctff\_chars}, \texttt{ctff\_features}, and \texttt{ctff\_daily\_ret}. They provide a compact model-input interface and a common evaluation environment. They are not mixed into the headline sample: \texttt{contrib.global\_factor} remains the baseline because it exposes the historical stock-month panel and the published characteristic taxonomy directly.
+
+\subsection{Prequential forecasts}
+
+For each month, every model is estimated using only a fixed-length trailing sample ending before the forecast date. The baseline training window is ten years; fifteen- and twenty-year windows are robustness checks. Firm characteristics are cross-sectionally rank transformed to $[-1,1]$ each month and missing values are set to the cross-sectional median after the transform. Industry indicators and a small set of predetermined aggregate variables enter only where specified.
+
+The model grid follows the empirical asset-pricing literature rather than introducing a bespoke forecasting architecture:
+\begin{enumerate}[leftmargin=2em]
+\item ridge regression;
+\item elastic net;
+\item extremely randomized trees;
+\item gradient-boosted trees;
+\item multilayer perceptrons;
+\item an equal-weight forecast ensemble.
+\end{enumerate}
+Baseline hyperparameters are fixed ex ante in the repository configuration. Nested chronological validation within the rolling training window is a robustness exercise rather than the source of the headline specification. The final deployment month never affects either choice.
+
+The reliability scale $\widehat s_{i,t}$ is fitted from prequential absolute forecast residuals available before $t$. The baseline combines a residual-scale model with cross-model forecast dispersion. Alternatives use each component separately, a constant scale, realized-volatility scaling, and Bayesian forecast standard errors where available. This decomposition is important for comparison with \citet{Allena2026}: our certificate concerns realized ranking decisions, not whether a stock-specific posterior interval contains an unknown expected return.
+
+\subsection{Certification schedule}
+
+The prequential prediction panel is generated once and then treated as the input to the certification layer. The baseline annual schedule uses a deterministic grid $q\in\{0,0.1,\ldots,3.0\}$, one hundred twenty trailing certification months, and twelve deployment months. At the end of each deployment, the threshold is recertified. All windows move forward chronologically. The first deployable date is determined by the rolling forecast-training window plus the certification history; it is never backfilled.
+
+The main risk budgets are $\alpha\in\{0.25,0.30,0.35,0.40\}$ at confidence $1-\delta=0.90$. We report the complete risk--breadth frontier rather than selecting $\alpha$ from deployment returns. The dense grid is fixed independently of returns and always includes a fallback that abstains from all relations. As a robustness check, a sixty-month proposal block targets specified breadth levels and is followed by a guard exceeding the complete forecasting-and-scale algorithm's effective memory before certification begins. With the baseline ten-year forecast window, five-year residual-scale history, and annual refits, the conservative implementation records a 192-month memory bound and uses a 194-month guard. This deliberately inefficient robustness design is not needed for the deterministic main grid.
+
+\subsection{Portfolio experiments}
+
+The core experiments compare:
+\begin{enumerate}[leftmargin=2em]
+\item the raw relation-graph portfolio at $q=0$ and the otherwise identical certified graph portfolio at $q=\widehat q$;
+\item the conventional raw top-minus-bottom decile strategy as a separate benchmark;
+\item raw fixed-denominator edge positions;
+\item certified variable-notional edge positions;
+\item certified edge positions rescaled to the raw gross exposure;
+\item the exact removed-edge component;
+\item forecast-confidence filters and simple predicted-spread cutoffs;
+\item cost-aware portfolio optimization using raw and certified signals.
+\end{enumerate}
+
+Pair relations are equal weighted in the baseline and value weighted in robustness tests. The certification exercise is reported both over all stock pairs and over the economically central raw top-versus-bottom tail pairs. Portfolio turnover is computed after passive return drift over the union of consecutive stock universes, so a security that delists or fails the next formation filter is explicitly liquidated rather than silently disappearing. We impose position caps in the optimization experiments, exclude microcaps from the headline portfolios, and report factor exposures. Net returns are evaluated at linear one-way costs of 10, 25, and 50 basis points and under \eqref{eq:capacity-cost} for AUM levels from ten million to one billion dollars.
+
+\subsection{Inference and anti-overfitting discipline}
+
+Time-series means and differences use heteroskedasticity-and-autocorrelation robust standard errors. Strategy comparisons additionally use paired block bootstraps over months and report performance by decade. Cross-sectional mechanism regressions cluster by month and stock where appropriate. The certification confidence statement is not replaced by these conventional standard errors; the two answer different questions.
+
+The headline hypotheses, model grid, cost grid, sample filters, and primary exhibits are fixed in the repository configuration before WRDS results are attached. Any post-results specification is labelled exploratory. This separation is essential because a paper about reliability cannot itself rely on an undisclosed specification search.

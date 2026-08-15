@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: "Certified Stock Ranking"
+message: "Please cite the paper and software release."
+type: software
+authors:
+  - family-names: Bignozzi
+    given-names: Enrico
+version: 0.1.0
+date-released: 2026-08-15
+license: MIT
+preferred-citation:
+  type: article
+  title: "When Should Investors Trust a Machine-Learned Stock Ranking?"
+  authors:
+    - family-names: Bignozzi
+      given-names: Enrico
+  year: 2026
